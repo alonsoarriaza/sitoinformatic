@@ -12,6 +12,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
+
 import com.shop.proyect.sitoinformatic.repository.UserRepository;
 
 @Configuration
@@ -38,21 +41,25 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+   @Bean
+public SecurityFilterChain securityFilterChain(
+        HttpSecurity http, 
+        JwtAuthenticationFilter jwtAuthFilter, 
+        AuthenticationProvider authenticationProvider) throws Exception {
+    
     http
-        // Desactivamos CSRF por completo (CUIDADO: solo para pruebas)
-        .csrf(csrf -> csrf.disable())
-        // Desactivamos los frames (por si usas H2 console)
-        .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+        .csrf(csrf -> csrf.disable()) 
         .authorizeHttpRequests(auth -> auth
-            // Abrimos TODO para descartar que sea un problema de rutas
-            .anyRequest().permitAll()
+            .requestMatchers("/auth/**").permitAll() // Login abierto
+            .requestMatchers(HttpMethod.GET, "/components/**").permitAll() // Ver componentes es público
+            // El resto de métodos (PUT, POST, DELETE) requieren estar logueado
+            .anyRequest().authenticated() 
         )
-        // Mantenemos la política sin estado
         .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS) 
+        )
+        .authenticationProvider(authenticationProvider) 
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);         
 
     return http.build();
 }
