@@ -1,0 +1,6 @@
+/target/
+.mvn/
+.vscode/
+bin/
+*.class
+*.log
