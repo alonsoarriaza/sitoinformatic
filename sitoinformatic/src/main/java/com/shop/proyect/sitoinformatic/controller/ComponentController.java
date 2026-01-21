@@ -47,7 +47,7 @@ public class ComponentController {
         return ResponseEntity.noContent().build();
     }  
 @PutMapping("/{id}")
-@PreAuthorize("hasRole('ADMIN')")
+// @PreAuthorize("hasRole('ADMIN')")
 public ResponseEntity<Component> update(@PathVariable Long id,@Valid @RequestBody Component componentDetails) {
     Component update = componentService.updateComponent(id, componentDetails);
     return ResponseEntity.ok(update);

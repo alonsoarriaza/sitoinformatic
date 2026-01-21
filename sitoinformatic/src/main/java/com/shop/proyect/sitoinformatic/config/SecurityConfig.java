@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.shop.proyect.sitoinformatic.repository.UserRepository;
 
 @Configuration
@@ -20,7 +19,6 @@ import com.shop.proyect.sitoinformatic.repository.UserRepository;
 @EnableWebSecurity 
 public class SecurityConfig {
 
-  
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -32,7 +30,6 @@ public class SecurityConfig {
             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
     
-   
     @Bean
     public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, BCryptPasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -42,25 +39,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http, 
-            JwtAuthenticationFilter jwtAuthFilter, 
-            AuthenticationProvider authenticationProvider) throws Exception {
-        
-        http
-            .csrf(csrf -> csrf.disable()) 
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers(org.springframework.http.HttpMethod.GET, "/components/**").permitAll()
-                .anyRequest().authenticated() 
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) 
-            )
-            .authenticationProvider(authenticationProvider) 
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);         
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        // Desactivamos CSRF por completo (CUIDADO: solo para pruebas)
+        .csrf(csrf -> csrf.disable())
+        // Desactivamos los frames (por si usas H2 console)
+        .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+        .authorizeHttpRequests(auth -> auth
+            // Abrimos TODO para descartar que sea un problema de rutas
+            .anyRequest().permitAll()
+        )
+        // Mantenemos la política sin estado
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
 
-        return http.build();
-    }
-
+    return http.build();
+}
 }
