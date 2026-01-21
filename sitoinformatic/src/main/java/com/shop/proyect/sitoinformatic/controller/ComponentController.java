@@ -49,16 +49,7 @@ public class ComponentController {
 @PutMapping("/{id}")
 @PreAuthorize("hasRole('ADMIN')")
 public ResponseEntity<Component> update(@PathVariable Long id,@Valid @RequestBody Component componentDetails) {
-    return componentRepository.findById(id)
-            .map(component -> {
-                component.setProductName(componentDetails.getProductName());
-                component.setCategory(componentDetails.getCategory());
-                component.setBrand(componentDetails.getBrand());
-                component.setPrice(componentDetails.getPrice());
-                component.setStock(componentDetails.getStock());
-                Component updated = componentRepository.save(component);
-                return ResponseEntity.ok(updated);
-            })
-            .orElse(ResponseEntity.notFound().build());
+    Component update = componentService.updateComponent(id, componentDetails);
+    return ResponseEntity.ok(update);
 }
 }
