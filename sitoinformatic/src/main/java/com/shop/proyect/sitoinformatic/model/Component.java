@@ -41,12 +41,24 @@ private BigDecimal price;
 @Min(value = 0, message = "El stock no puede ser negativo")
 private int stock;
 
-public Component(String productName, String category, String brand, BigDecimal price, int stock) {
+@Column(name = "performance_level")
+private String performanceLevel;
+
+@Column (name = "compatibility_tag")
+private String compatibilityTag;
+
+
+
+
+public Component(String productName, String category, String brand, BigDecimal price, int stock, String performanceLevel, String compatibilityTag) {
     this.productName = productName;
     this.category = category;
     this.brand = brand;
     this.price = price;
     this.stock = stock;
+    this.performanceLevel = performanceLevel;
+    this.compatibilityTag = compatibilityTag;
+    
 }
 public Component() {
 }
@@ -85,5 +97,17 @@ public int getStock() {
 }
 public void setStock(int stock) {
     this.stock = stock;
+}
+public String getPerformanceLevel() {
+    return performanceLevel;
+}
+public void setPerformanceLevel(String performanceLevel) {
+    this.performanceLevel = performanceLevel;
+}
+public String getCompatibilityTag() {
+    return compatibilityTag;
+}
+public void setCompatibilityTag(String compatibilityTag) {
+    this.compatibilityTag = compatibilityTag;
 }
 }
