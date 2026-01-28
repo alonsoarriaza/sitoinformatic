@@ -84,5 +84,28 @@ public Component selectStorage(BigDecimal totalBudget) {
         .findFirst()
         .orElse(null);
 }
+public Component selectPsu(BigDecimal totalBudget) {
+    // La fuente de alimentación es vital para la seguridad (10% del presupuesto)
+    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.10"));
+
+    return componentRepository.findAll().stream()
+        .filter(c -> c.getCategory().equalsIgnoreCase("Fuente de Alimentación"))
+        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
+        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))
+        .findFirst()
+        .orElse(null);
+}
+
+public Component selectCase(BigDecimal totalBudget) {
+    // La caja o chasis (5% del presupuesto)
+    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.05"));
+
+    return componentRepository.findAll().stream()
+        .filter(c -> c.getCategory().equalsIgnoreCase("Caja"))
+        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
+        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))
+        .findFirst()
+        .orElse(null);
+}
 }   
 

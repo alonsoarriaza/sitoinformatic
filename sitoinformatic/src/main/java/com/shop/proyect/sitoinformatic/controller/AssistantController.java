@@ -42,8 +42,9 @@ public ResponseEntity<?> processRequierements(@RequestBody PCRequirementRequest 
     Component gpu = assistantService.selectGpu(request.getBudget());
     // (Nota: No ponemos error 404 aquí por si el usuario quiere usar la gráfica integrada de la CPU)
     Component ram = assistantService.selectRam(request.getBudget());
-
     Component ssd = assistantService.selectStorage(request.getBudget());
+    Component psu = assistantService.selectPsu(request.getBudget());
+    Component pcCase = assistantService.selectCase(request.getBudget());
 //Añadimos todos los componentes a una lista.
     List<Component> pcBuild = new ArrayList<>();
     pcBuild.add(selectedCpu);
@@ -51,6 +52,8 @@ public ResponseEntity<?> processRequierements(@RequestBody PCRequirementRequest 
     if (gpu != null) pcBuild.add(gpu);
     if (ram != null) pcBuild.add(ram);
     if (ssd != null) pcBuild.add(ssd);
+    if (psu != null) pcBuild.add(psu);
+    if (pcCase != null) pcBuild.add(pcCase);
     
     return ResponseEntity.ok(pcBuild);
 }
