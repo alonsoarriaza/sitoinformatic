@@ -53,7 +53,7 @@ public Component selectMotherboard(String socket, BigDecimal totalBudget) {
         .orElse(null);
 }
 public Component selectGpu(BigDecimal totalBudget, String priority) {
-    // Calculamos el presupuesto para la gráfica (aprox 40%)
+    // Calculamos el presupuesto para la gráfica 
     BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.40"));
 
     return componentRepository.findAll().stream()
