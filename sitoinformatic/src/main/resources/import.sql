@@ -20,3 +20,6 @@ INSERT INTO components (product_name, category, brand, price, stock, performance
 -- MEMORIA RAM 
 INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES ('Corsair Vengeance LPX DDR4 16GB 3200MHz', 'RAM', 'Corsair', 45.00, 50, 'MEDIO', 'DDR4');
 INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES ('G.Skill Trident Z5 RGB DDR5 32GB 6400MHz', 'RAM', 'G.Skill', 145.00, 30, 'ENTUSIASTA', 'DDR5');
+-- ALMACENAMIENTO
+INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES ('Samsung 980 Pro 1TB NVMe', 'Almacenamiento', 'Samsung', 95.00, 40, 'ALTO', 'M.2');
+INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES ('Crucial P3 500GB M.2', 'Almacenamiento', 'Crucial', 45.00, 60, 'MEDIO', 'M.2');

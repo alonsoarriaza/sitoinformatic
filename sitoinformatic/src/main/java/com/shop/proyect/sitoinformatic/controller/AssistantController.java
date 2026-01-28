@@ -7,7 +7,7 @@ import com.shop.proyect.sitoinformatic.dto.PCRequirementRequest;
 import com.shop.proyect.sitoinformatic.service.AssistantService;
 import com.shop.proyect.sitoinformatic.model.Component;
 
-
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +41,13 @@ public ResponseEntity<?> processRequierements(@RequestBody PCRequirementRequest 
     // 4. NUEVO: Selección de Tarjeta Gráfica (GPU)
     Component gpu = assistantService.selectGpu(request.getBudget());
     // (Nota: No ponemos error 404 aquí por si el usuario quiere usar la gráfica integrada de la CPU)
-
-    // 5. Devolvemos la lista con las 3 piezas
-    // Si la GPU es null, solo añadimos las dos primeras
-    List<Component> pcBuild = (gpu != null) ? List.of(selectedCpu, mobo, gpu) : List.of(selectedCpu, mobo);
+    Component ram = assistantService.selectRam(request.getBudget());
+//Añadimos todos los componentes a una lista.
+    List<Component> pcBuild = new ArrayList<>();
+    pcBuild.add(selectedCpu);
+    pcBuild.add(mobo);
+    if (gpu != null) pcBuild.add(gpu);
+    if (ram != null) pcBuild.add(ram);
     
     return ResponseEntity.ok(pcBuild);
 }

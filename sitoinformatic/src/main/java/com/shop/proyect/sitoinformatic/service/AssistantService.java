@@ -62,5 +62,16 @@ public Component selectGpu(BigDecimal totalBudget) {
         .findFirst()
         .orElse(null);
 }
+public Component selectRam(BigDecimal totalBudget) {
+    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.10"));
+
+    return componentRepository.findAll().stream()
+        // Cambiamos "Memoria RAM" por "RAM" para que coincida con tu SQL
+        .filter(c -> c.getCategory().equalsIgnoreCase("RAM")) 
+        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
+        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))
+        .findFirst()
+        .orElse(null);
+}
 }   
 
