@@ -52,6 +52,7 @@ public SecurityFilterChain securityFilterChain(
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/auth/**").permitAll() // Login abierto
             .requestMatchers(HttpMethod.GET, "/components/**").permitAll() // Ver componentes es público
+            .requestMatchers("/api/assistant/**").permitAll()
             // El resto de métodos (PUT, POST, DELETE) requieren estar logueado
             .anyRequest().authenticated() 
         )
