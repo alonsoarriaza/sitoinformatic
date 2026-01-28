@@ -7,6 +7,7 @@ import com.shop.proyect.sitoinformatic.dto.PCRequirementRequest;
 import com.shop.proyect.sitoinformatic.service.AssistantService;
 import com.shop.proyect.sitoinformatic.model.Component;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,24 +26,26 @@ public class AssistantController {
 @PostMapping("/build")
 public ResponseEntity<?> processRequierements(@RequestBody PCRequirementRequest request) {
     
-    // 1. Validación de presupuesto.
+    // 1. Validación 
     String validationMessage = assistantService.validateRequirements(request);
-    if (!validationMessage.equals("OK")) {
-        return ResponseEntity.badRequest().body(validationMessage);
-    }
+    if (!validationMessage.equals("OK")) return ResponseEntity.badRequest().body(validationMessage);
 
-    // 2. Selección de CPU.
+    // 2. Selección de CPU
     Component selectedCpu = assistantService.selectCpu(request.getBudget());
-    if (selectedCpu == null) {
-        return ResponseEntity.status(404).body("No se encontraron procesadores que se ajusten a ese presupuesto.");
-    }
-    // 3. Selección de Placa Base (Usamos 'selectedCpu' para obtener el tag).
+    if (selectedCpu == null) return ResponseEntity.status(404).body("No hay CPU para este presupuesto");
+
+    // 3. Selección de Placa Base (Mobo)
     Component mobo = assistantService.selectMotherboard(selectedCpu.getCompatibilityTag(), request.getBudget());
-    if (mobo == null) {
-        return ResponseEntity.status(404).body("No se encontró una placa base compatible con la CPU seleccionada.");
-    }
-    // 4. Devolvemos la lista con ambos.
-    List<Component> pcBuild = List.of(selectedCpu, mobo);
+    if (mobo == null) return ResponseEntity.status(404).body("No hay placa compatible");
+
+    // 4. NUEVO: Selección de Tarjeta Gráfica (GPU)
+    Component gpu = assistantService.selectGpu(request.getBudget());
+    // (Nota: No ponemos error 404 aquí por si el usuario quiere usar la gráfica integrada de la CPU)
+
+    // 5. Devolvemos la lista con las 3 piezas
+    // Si la GPU es null, solo añadimos las dos primeras
+    List<Component> pcBuild = (gpu != null) ? List.of(selectedCpu, mobo, gpu) : List.of(selectedCpu, mobo);
+    
     return ResponseEntity.ok(pcBuild);
 }
 }
