@@ -41,5 +41,28 @@ public Component selectCpu(BigDecimal totalBudget){
         .findFirst()// Coge el mejor 
         .orElse(null); // Si no hay ninguno, devolvemos null
 }
+public Component selectMotherboard(String socket, BigDecimal totalBudget) {
+    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.15"));
+
+    return componentRepository.findAll().stream()
+        .filter(c -> c.getCategory().equalsIgnoreCase("Placa Base")) // Solo placas
+        .filter(c -> c.getCompatibilityTag().equalsIgnoreCase(socket)) // ¡QUE SEA EL MISMO SOCKET!
+        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0) // Límite de precio
+        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice())) // La mejor primero
+        .findFirst()
+        .orElse(null);
+}
+public Component selectGpu(BigDecimal totalBudget, String priority) {
+    // Calculamos el presupuesto para la gráfica (aprox 40%)
+    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.40"));
+
+    return componentRepository.findAll().stream()
+        .filter(c -> c.getCategory().equalsIgnoreCase("Tarjeta Gráfica"))
+        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
+        // Opcional: Podríamos filtrar por performanceLevel según la prioridad
+        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))
+        .findFirst()
+        .orElse(null);
+}
 }   
 
