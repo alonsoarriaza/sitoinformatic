@@ -66,8 +66,19 @@ public Component selectRam(BigDecimal totalBudget) {
     BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.10"));
 
     return componentRepository.findAll().stream()
-        // Cambiamos "Memoria RAM" por "RAM" para que coincida con tu SQL
+        
         .filter(c -> c.getCategory().equalsIgnoreCase("RAM")) 
+        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
+        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))
+        .findFirst()
+        .orElse(null);
+}
+public Component selectStorage(BigDecimal totalBudget) {
+    // El almacenamiento (SSD) 
+    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.10"));
+
+    return componentRepository.findAll().stream()
+        .filter(c -> c.getCategory().equalsIgnoreCase("Almacenamiento"))
         .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
         .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))
         .findFirst()
