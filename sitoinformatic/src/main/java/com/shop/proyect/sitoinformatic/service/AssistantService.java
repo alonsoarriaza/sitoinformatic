@@ -3,10 +3,12 @@ package com.shop.proyect.sitoinformatic.service;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.shop.proyect.sitoinformatic.dto.PCRequirementRequest;
+import com.shop.proyect.sitoinformatic.model.Component;
 import com.shop.proyect.sitoinformatic.repository.ComponentRepository;
 
 @Service
@@ -28,6 +30,16 @@ public String validateRequirements(PCRequirementRequest request) {
 
     return "OK"; 
 }
-   
-    
+public Component selectCpu(BigDecimal totalBudget){
+
+    BigDecimal cpuMaxPrice = totalBudget.multiply(new BigDecimal("0.25"));
+
+    return componentRepository.findAll().stream()
+        .filter(c -> c.getCategory().equalsIgnoreCase("Procesador"))// Solo procesadores
+        .filter(c -> c.getPrice().compareTo(cpuMaxPrice) <= 0)// Que no superen el precio máximo
+        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))// Ordenar de mayor a menor precio
+        .findFirst()// Coge el mejor 
+        .orElse(null); // Si no hay ninguno, devolvemos null
 }
+}   
+

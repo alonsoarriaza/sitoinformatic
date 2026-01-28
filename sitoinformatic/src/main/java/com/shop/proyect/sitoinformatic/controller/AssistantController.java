@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.shop.proyect.sitoinformatic.dto.PCRequirementRequest;
 import com.shop.proyect.sitoinformatic.service.AssistantService;
-
+import com.shop.proyect.sitoinformatic.model.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,9 +27,10 @@ public ResponseEntity<?> processRequierements(@RequestBody PCRequirementRequest 
        
         return ResponseEntity.badRequest().body(validationMessage);
     }
-
-    
-    System.out.println("Validación superada para: " + request.getBudget());
-    return ResponseEntity.ok(request);
+    Component selectedCpu = assistantService.selectCpu(request.getBudget());
+    if (selectedCpu == null) {
+        return ResponseEntity.status(404).body("No se encontraron procesadores que se ajusten a ese presupuesto.");
+    }
+    return ResponseEntity.ok(selectedCpu);
 }
 }
