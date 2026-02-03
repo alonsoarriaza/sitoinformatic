@@ -52,4 +52,16 @@ public ResponseEntity<Component> update(@PathVariable Long id,@Valid @RequestBod
     Component update = componentService.updateComponent(id, componentDetails);
     return ResponseEntity.ok(update);
 }
+@GetMapping("/category/{category}")
+public ResponseEntity<Page<Component>> getByCategory(
+    @PathVariable String category,
+    @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        return ResponseEntity.ok(componentService.getComponentsByCategory(category, pageable));
+}
+@GetMapping("/search")
+public ResponseEntity<Page<Component>> searchByName(
+    @RequestParam String name,
+    @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        return ResponseEntity.ok(componentService.searchByName(name, pageable));
+}
 }

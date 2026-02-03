@@ -51,4 +51,13 @@ public class ComponentService {
         }) 
         .orElseThrow(() -> new RuntimeException("Componente no encontrado con id: " + id));
 }
+// Método para filtrar por categoría
+public Page<Component> getComponentsByCategory(String category, Pageable pageable) {
+    return componentRepository.findByCategoryIgnoreCase(category, pageable);
+}
+
+// Método para el buscador por nombre
+public Page<Component> searchByName(String name, Pageable pageable) {
+    return componentRepository.findByProductNameContainingIgnoreCase(name, pageable);
+}
 }
