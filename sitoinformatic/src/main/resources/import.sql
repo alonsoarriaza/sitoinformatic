@@ -1,64 +1,79 @@
 -- === PROCESADORES (CPU) ===
--- Gama Baja
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Intel Core i3-12100', 'CPU', 110.00, 50, 'LGA1700');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('AMD Ryzen 3 4100', 'CPU', 85.00, 30, 'AM4');
--- Gama Media
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Intel Core i5-13400', 'CPU', 230.00, 45, 'LGA1700');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('AMD Ryzen 5 5600X', 'CPU', 165.00, 60, 'AM4');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('AMD Ryzen 5 7600', 'CPU', 215.00, 40, 'AM5');
--- Gama Alta / Entusiasta
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Intel Core i7-14700K', 'CPU', 425.00, 20, 'LGA1700');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Intel Core i9-14900KS', 'CPU', 720.00, 10, 'LGA1700');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('AMD Ryzen 7 7800X3D', 'CPU', 395.00, 15, 'AM5');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('AMD Ryzen 9 7950X3D', 'CPU', 640.00, 12, 'AM5');
+INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES 
+('Intel Core i3-12100', 'CPU', 'Intel', 110.00, 50, 'Gama Baja', 'LGA1700'),
+('Intel Core i5-13400', 'CPU', 'Intel', 230.00, 45, 'Gama Media', 'LGA1700'),
+('Intel Core i7-14700K', 'CPU', 'Intel', 425.00, 20, 'Gama Alta', 'LGA1700'),
+('Intel Core i9-14900K', 'CPU', 'Intel', 620.00, 10, 'Entusiasta', 'LGA1700'),
+('AMD Ryzen 5 5500', 'CPU', 'AMD', 95.00, 40, 'Gama Baja', 'AM4'),
+('AMD Ryzen 5 5600X', 'CPU', 'AMD', 165.00, 60, 'Gama Media', 'AM4'),
+('AMD Ryzen 7 5800X', 'CPU', 'AMD', 210.00, 30, 'Gama Alta', 'AM4'),
+('AMD Ryzen 5 7600', 'CPU', 'AMD', 205.00, 25, 'Gama Media', 'AM5'),
+('AMD Ryzen 7 7800X3D', 'CPU', 'AMD', 395.00, 25, 'Gama Alta', 'AM5'),
+('AMD Ryzen 9 7950X3D', 'CPU', 'AMD', 640.00, 15, 'Entusiasta', 'AM5');
 
--- === PLACAS BASE (MOBO) ===
--- LGA1700
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('ASUS Prime H610M-K', 'PLACA_BASE', 80.00, 40, 'LGA1700');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Gigabyte B760 Gaming X', 'PLACA_BASE', 160.00, 25, 'LGA1700');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('MSI MEG Z790 GODLIKE', 'PLACA_BASE', 1200.00, 5, 'LGA1700');
--- AM4 / AM5
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('ASRock B450 Steel Legend', 'PLACA_BASE', 95.00, 30, 'AM4');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('ASUS ROG Strix B550-F', 'PLACA_BASE', 180.00, 20, 'AM4');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Gigabyte B650 AORUS ELITE', 'PLACA_BASE', 220.00, 15, 'AM5');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('ASRock X670E Taichi', 'PLACA_BASE', 490.00, 8, 'AM5');
+-- === PLACAS BASE (PLACA_BASE) ===
+INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES 
+('ASUS Prime H610M-E', 'PLACA_BASE', 'ASUS', 85.00, 30, 'Gama Baja', 'LGA1700'),
+('Gigabyte B760 Gaming X', 'PLACA_BASE', 'Gigabyte', 145.00, 25, 'Gama Media', 'LGA1700'),
+('MSI MAG Z790 TOMAHAWK', 'PLACA_BASE', 'MSI', 270.00, 20, 'Gama Alta', 'LGA1700'),
+('MSI A520M-A PRO', 'PLACA_BASE', 'MSI', 65.00, 40, 'Gama Baja', 'AM4'),
+('Gigabyte B550M DS3H', 'PLACA_BASE', 'Gigabyte', 95.00, 35, 'Gama Media', 'AM4'),
+('ASUS ROG STRIX B550-F', 'PLACA_BASE', 'ASUS', 175.00, 15, 'Gama Alta', 'AM4'),
+('Gigabyte B650 EAGLE AX', 'PLACA_BASE', 'Gigabyte', 160.00, 20, 'Gama Media', 'AM5'),
+('ASRock X670E Taichi', 'PLACA_BASE', 'ASRock', 520.00, 10, 'Entusiasta', 'AM5');
 
 -- === TARJETAS GRÁFICAS (GPU) ===
--- Oficina / Entrada
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('NVIDIA GT 1030 2GB', 'GPU', 85.00, 20, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('AMD Radeon RX 6400', 'GPU', 130.00, 15, 'UNIVERSAL');
--- Gaming 1080p/1440p
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('NVIDIA RTX 4060 Ti', 'GPU', 390.00, 35, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('AMD Radeon RX 6750 XT', 'GPU', 360.00, 25, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('NVIDIA RTX 4070 Super', 'GPU', 620.00, 20, 'UNIVERSAL');
--- Gaming 4K / Streaming Extreme
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('NVIDIA RTX 4090 24GB', 'GPU', 1850.00, 5, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('AMD Radeon RX 7900 XTX', 'GPU', 990.00, 10, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('NVIDIA RTX 5080 (NextGen)', 'GPU', 1200.00, 8, 'UNIVERSAL');
+INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES 
+('NVIDIA GT 1030 2GB', 'GPU', 'Gigabyte', 85.00, 20, 'Oficina', 'UNIVERSAL'),
+('AMD Radeon RX 6400', 'GPU', 'Sapphire', 130.00, 15, 'Gama Baja', 'UNIVERSAL'),
+('NVIDIA RTX 3050 8GB', 'GPU', 'MSI', 235.00, 30, 'Gama Baja', 'UNIVERSAL'),
+('NVIDIA RTX 4060 8GB', 'GPU', 'Zotac', 315.00, 40, 'Gama Media', 'UNIVERSAL'),
+('AMD Radeon RX 6750 XT', 'GPU', 'XFX', 370.00, 25, 'Gama Media', 'UNIVERSAL'),
+('NVIDIA RTX 4070 SUPER', 'GPU', 'ASUS', 660.00, 20, 'Gama Alta', 'UNIVERSAL'),
+('AMD Radeon RX 7900 XTX', 'GPU', 'Sapphire', 995.00, 10, 'Gama Alta', 'UNIVERSAL'),
+('NVIDIA RTX 4090 24GB', 'GPU', 'MSI', 1950.00, 5, 'Entusiasta', 'UNIVERSAL');
 
--- === MEMORIA RAM ===
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Crucial 8GB DDR4 3200MHz', 'RAM', 25.00, 100, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Corsair Vengeance LPX 16GB (2x8)', 'RAM', 50.00, 80, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('G.Skill Ripjaws V 32GB (2x16)', 'RAM', 95.00, 50, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Kingston Fury Renegade 32GB DDR5', 'RAM', 160.00, 40, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Corsair Dominator Titanium 64GB DDR5', 'RAM', 320.00, 15, 'UNIVERSAL');
+-- === MEMORIA RAM (RAM) ===
+INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES 
+('Kingston ValueRAM 8GB DDR4', 'RAM', 'Kingston', 22.00, 100, 'Gama Baja', 'UNIVERSAL'),
+('Corsair Vengeance LPX 16GB DDR4', 'RAM', 'Corsair', 45.00, 80, 'Gama Media', 'UNIVERSAL'),
+('G.Skill Ripjaws V 32GB DDR4', 'RAM', 'G.Skill', 85.00, 50, 'Gama Alta', 'UNIVERSAL'),
+('Crucial 16GB DDR5 4800MHz', 'RAM', 'Crucial', 60.00, 60, 'Gama Baja', 'UNIVERSAL'),
+('Corsair Vengeance RGB 32GB DDR5', 'RAM', 'Corsair', 135.00, 40, 'Gama Alta', 'UNIVERSAL'),
+('G.Skill Trident Z5 64GB DDR5', 'RAM', 'G.Skill', 240.00, 15, 'Entusiasta', 'UNIVERSAL');
 
--- === ALMACENAMIENTO (SSD/HDD) ===
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Kingston A400 480GB SATA', 'SSD', 35.00, 70, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Samsung 970 EVO Plus 1TB NVMe', 'SSD', 90.00, 50, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('WD Black SN850X 2TB', 'SSD', 175.00, 30, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Seagate IronWolf 8TB HDD', 'SSD', 210.00, 12, 'UNIVERSAL');
+-- === ALMACENAMIENTO (SSD y HDD) ===
+INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES 
+('Kingston A400 240GB SATA', 'SSD', 'Kingston', 19.00, 100, 'Gama Baja', 'UNIVERSAL'),
+('Crucial BX500 480GB SATA', 'SSD', 'Crucial', 38.00, 80, 'Gama Baja', 'UNIVERSAL'),
+('Samsung 870 EVO 1TB SATA', 'SSD', 'Samsung', 95.00, 50, 'Gama Media', 'UNIVERSAL'),
+('WD Blue SN580 500GB NVMe', 'SSD', 'Western Digital', 45.00, 60, 'Gama Media', 'UNIVERSAL'),
+('Crucial P3 Plus 1TB NVMe', 'SSD', 'Crucial', 75.00, 70, 'Gama Media', 'UNIVERSAL'),
+('Samsung 980 Pro 1TB NVMe', 'SSD', 'Samsung', 115.00, 40, 'Gama Alta', 'UNIVERSAL'),
+('WD Black SN850X 2TB NVMe', 'SSD', 'Western Digital', 170.00, 20, 'Gama Alta', 'UNIVERSAL'),
+('Seagate BarraCuda 2TB HDD', 'HDD', 'Seagate', 55.00, 40, 'Almacenamiento', 'UNIVERSAL');
 
--- === PERIFÉRICOS (Teclados, Ratones, Monitores) ===
--- Monitores
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Monitor BenQ GW2480 24"', 'MONITOR', 115.00, 25, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Monitor AOC Gaming 27" 144Hz', 'MONITOR', 195.00, 20, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Monitor ASUS ROG Swift OLED 4K', 'MONITOR', 1300.00, 5, 'UNIVERSAL');
--- Teclados
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Teclado Logitech K120 Business', 'TECLADO', 15.00, 100, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Teclado Mecanico Razer BlackWidow', 'TECLADO', 140.00, 15, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Teclado Custom Keychron Q1', 'TECLADO', 190.00, 10, 'UNIVERSAL');
--- Ratones
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Raton Optico Basico HP', 'RATON', 10.00, 80, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Raton Logitech G502 Hero', 'RATON', 55.00, 40, 'UNIVERSAL');
-INSERT INTO components (name, category, price, stock, compatibility_tag) VALUES ('Raton Finalmouse Ultralight', 'RATON', 220.00, 3, 'UNIVERSAL');
+-- === FUENTES DE ALIMENTACIÓN (PSU) ===
+INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES 
+('Aerocool VX PLUS 500W', 'PSU', 'Aerocool', 32.00, 50, 'Gama Baja', 'UNIVERSAL'),
+('Corsair CV650 650W 80+', 'PSU', 'Corsair', 65.00, 40, 'Gama Media', 'UNIVERSAL'),
+('EVGA 750 BQ 80+ Bronze', 'PSU', 'EVGA', 85.00, 30, 'Gama Media', 'UNIVERSAL'),
+('Corsair RM850e 850W Gold', 'PSU', 'Corsair', 125.00, 20, 'Gama Alta', 'UNIVERSAL'),
+('Seasonic Prime 1300W Gold', 'PSU', 'Seasonic', 290.00, 10, 'Entusiasta', 'UNIVERSAL');
+
+-- === CAJAS / TORRES (CASE) ===
+INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES 
+('Nox Forte USB 3.0', 'CASE', 'Nox', 28.00, 40, 'Gama Baja', 'UNIVERSAL'),
+('Tempest Soul RGB', 'CASE', 'Tempest', 45.00, 30, 'Gama Media', 'UNIVERSAL'),
+('Corsair 4000D Airflow', 'CASE', 'Corsair', 95.00, 25, 'Gama Alta', 'UNIVERSAL'),
+('Lian Li PC-O11 Dynamic', 'CASE', 'Lian Li', 160.00, 15, 'Entusiasta', 'UNIVERSAL');
+
+-- === PERIFÉRICOS ===
+INSERT INTO components (product_name, category, brand, price, stock, performance_level, compatibility_tag) VALUES 
+('Monitor LG 24 Pulgadas FHD', 'MONITOR', 'LG', 125.00, 40, 'Oficina', 'UNIVERSAL'),
+('Monitor MSI 27 Pulgadas 144Hz', 'MONITOR', 'MSI', 210.00, 25, 'Gaming', 'UNIVERSAL'),
+('Monitor Gigabyte 34 Curvo WQHD', 'MONITOR', 'Gigabyte', 420.00, 10, 'Entusiasta', 'UNIVERSAL'),
+('Teclado Logitech K120', 'TECLADO', 'Logitech', 15.00, 100, 'Oficina', 'UNIVERSAL'),
+('Teclado Mecanico Razer Ornata', 'TECLADO', 'Razer', 85.00, 30, 'Gaming', 'UNIVERSAL'),
+('Raton HP Basico', 'RATON', 'HP', 10.00, 100, 'Oficina', 'UNIVERSAL'),
+('Raton Logitech G502 Hero', 'RATON', 'Logitech', 58.00, 50, 'Gaming', 'UNIVERSAL');

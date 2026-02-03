@@ -8,44 +8,36 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.DecimalMin;
 
 @Entity
-@Table(name= "components")
+@Table(name = "components")
 public class Component {
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-@Column(name = "id")
-private Long id;
+    @Column(name = "product_name") 
+    @NotBlank(message = "El nombre no puede estar vacío")
+    private String productName;
 
-@Column(name = "productName")
-@NotBlank(message = "El nombre no puede estar vacío")
-private String productName;
+    @Column(name = "category")
+    private String category;
 
-@Column(name = "category")
-@NotBlank(message = "La categoría no puede estar vacía")
-private String category;
+    @Column(name = "brand")
+    private String brand;
 
-@Column(name = "brand")
-@NotBlank(message = "La marca no puede estar vacía")
-private String brand;
+    @Column(name = "price")
+    private BigDecimal price;
 
-@Column(name = "price")
-@DecimalMin(value = "0.01", message = "El precio debe ser mayor a cero")
-private BigDecimal price;
+    @Column(name = "stock")
+    private int stock;
 
-@Column(name = "stock")
-@Min(value = 0, message = "El stock no puede ser negativo")
-private int stock;
+    @Column(name = "performance_level")
+    private String performanceLevel;
 
-@Column(name = "performance_level")
-private String performanceLevel;
-
-@Column (name = "compatibility_tag")
-private String compatibilityTag;
+    @Column(name = "compatibility_tag")
+    private String compatibilityTag;
 
 
 
