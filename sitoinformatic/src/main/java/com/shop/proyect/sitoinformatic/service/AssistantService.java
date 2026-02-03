@@ -1,111 +1,85 @@
 package com.shop.proyect.sitoinformatic.service;
 
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.util.stream.Stream;
-
+import java.util.*;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.shop.proyect.sitoinformatic.dto.PCRequirementRequest;
 import com.shop.proyect.sitoinformatic.model.Component;
 import com.shop.proyect.sitoinformatic.repository.ComponentRepository;
 
 @Service
 public class AssistantService {
-@Autowired
-private ComponentRepository componentRepository; 
 
-public String validateRequirements(PCRequirementRequest request) {
-    BigDecimal budget = request.getBudget();
-    String use = request.getMainUse().toUpperCase();
+    @Autowired
+    private ComponentRepository componentRepository;
 
-    if (use.contains("GAMING") && budget.compareTo(new BigDecimal("400")) < 0) {
-        return "El presupuesto es demasiado bajo para un PC Gaming. Considera subir a 600€ para una experiencia fluida.";
+    public String validateRequirements(PCRequirementRequest request) {
+        BigDecimal budget = request.getBudget();
+        String use = request.getMainUse().toUpperCase();
+
+        // Validación de presupuesto mínimo por uso
+        if (use.contains("GAMING") && budget.compareTo(new BigDecimal("400")) < 0) {
+            return "Presupuesto insuficiente para Gaming.";
+        }
+        return "OK";
     }
 
-    if (use.contains("EDICION") && budget.compareTo(new BigDecimal("700")) < 0) {
-        return "Para edición de vídeo profesional, el presupuesto actual es insuficiente. Se recomiendan al menos 800€.";
+    // Buscador genérico: Filtra por categoría, stock, compatibilidad y precio máximo
+    private Component findBestComponent(String category, String compatibility, BigDecimal maxPrice) {
+        return componentRepository.findAll().stream()
+            .filter(c -> c.getCategory().equalsIgnoreCase(category))
+            .filter(c -> c.getStock() > 0) 
+            .filter(c -> compatibility == null || c.getCompatibilityTag().equalsIgnoreCase(compatibility))
+            .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
+            .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice())) // El más potente primero
+            .findFirst()
+            .orElse(null);
     }
 
-    return "OK"; 
-}
-public Component selectCpu(BigDecimal totalBudget){
-
-    BigDecimal cpuMaxPrice = totalBudget.multiply(new BigDecimal("0.25"));
-
-    return componentRepository.findAll().stream()
-        .filter(c -> c.getCategory().equalsIgnoreCase("Procesador"))// Solo procesadores
-        .filter(c -> c.getPrice().compareTo(cpuMaxPrice) <= 0)// Que no superen el precio máximo
-        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))// Ordenar de mayor a menor precio
-        .findFirst()// Coge el mejor 
-        .orElse(null); // Si no hay ninguno, devolvemos null
-}
-public Component selectMotherboard(String socket, BigDecimal totalBudget) {
-    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.15"));
-
-    return componentRepository.findAll().stream()
-        .filter(c -> c.getCategory().equalsIgnoreCase("Placa Base")) // Solo placas
-        .filter(c -> c.getCompatibilityTag().equalsIgnoreCase(socket)) // ¡QUE SEA EL MISMO SOCKET!
-        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0) // Límite de precio
-        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice())) // La mejor primero
-        .findFirst()
-        .orElse(null);
-}
-public Component selectGpu(BigDecimal totalBudget) { 
-    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.40"));
-
-    return componentRepository.findAll().stream()
-        .filter(c -> c.getCategory().equalsIgnoreCase("Tarjeta Gráfica"))
-        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
-        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))
-        .findFirst()
-        .orElse(null);
-}
-public Component selectRam(BigDecimal totalBudget) {
-    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.10"));
-
-    return componentRepository.findAll().stream()
+    public Map<String, Object> buildConfiguration(PCRequirementRequest request) {
+        BigDecimal total = request.getBudget();
+        String use = request.getMainUse().toUpperCase();
         
-        .filter(c -> c.getCategory().equalsIgnoreCase("RAM")) 
-        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
-        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))
-        .findFirst()
-        .orElse(null);
+        // Reparto de presupuesto (Porcentajes)
+        BigDecimal cpuPerc = new BigDecimal("0.25");
+        BigDecimal gpuPerc = use.contains("GAMING") ? new BigDecimal("0.40") : new BigDecimal("0.10");
+        BigDecimal moboPerc = new BigDecimal("0.15");
+        BigDecimal ramPerc = new BigDecimal("0.10");
+        BigDecimal storagePerc = new BigDecimal("0.10");
+
+        Map<String, Component> components = new LinkedHashMap<>();
+
+        // 1. CPU (Base de la configuración)
+        Component cpu = findBestComponent("Procesador", null, total.multiply(cpuPerc));
+        if (cpu == null) return null;
+        components.put("CPU", cpu);
+
+        // 2. Placa Base (Filtrada por Socket de CPU)
+        Component mobo = findBestComponent("Placa Base", cpu.getCompatibilityTag(), total.multiply(moboPerc));
+        components.put("Motherboard", mobo);
+
+        // 3. GPU, RAM y Almacenamiento
+        components.put("GPU", findBestComponent("Tarjeta Gráfica", null, total.multiply(gpuPerc)));
+        components.put("RAM", findBestComponent("RAM", null, total.multiply(ramPerc)));
+        components.put("Storage", findBestComponent("Almacenamiento", null, total.multiply(storagePerc)));
+
+        // Filtrado de nulos y cálculo de coste final
+        List<Component> selectedList = components.values().stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        BigDecimal totalSpent = selectedList.stream()
+                .map(Component::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Respuesta estructurada
+        Map<String, Object> result = new HashMap<>();
+        result.put("config", selectedList);
+        result.put("totalPrice", totalSpent);
+        result.put("savings", total.subtract(totalSpent));
+        
+        return result;
+    }
 }
-public Component selectStorage(BigDecimal totalBudget) {
-    // El almacenamiento (SSD) 
-    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.10"));
-
-    return componentRepository.findAll().stream()
-        .filter(c -> c.getCategory().equalsIgnoreCase("Almacenamiento"))
-        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
-        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))
-        .findFirst()
-        .orElse(null);
-}
-public Component selectPsu(BigDecimal totalBudget) {
-    // La fuente de alimentación es vital para la seguridad (10% del presupuesto)
-    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.10"));
-
-    return componentRepository.findAll().stream()
-        .filter(c -> c.getCategory().equalsIgnoreCase("Fuente de Alimentación"))
-        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
-        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))
-        .findFirst()
-        .orElse(null);
-}
-
-public Component selectCase(BigDecimal totalBudget) {
-    // La caja o chasis (5% del presupuesto)
-    BigDecimal maxPrice = totalBudget.multiply(new BigDecimal("0.05"));
-
-    return componentRepository.findAll().stream()
-        .filter(c -> c.getCategory().equalsIgnoreCase("Caja"))
-        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
-        .sorted((c1, c2) -> c2.getPrice().compareTo(c1.getPrice()))
-        .findFirst()
-        .orElse(null);
-}
-}   
-
