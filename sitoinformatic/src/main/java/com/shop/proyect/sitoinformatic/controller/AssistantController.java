@@ -1,35 +1,39 @@
 package com.shop.proyect.sitoinformatic.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.shop.proyect.sitoinformatic.dto.PCRequirementRequest;
 import com.shop.proyect.sitoinformatic.service.AssistantService;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
-@RequestMapping ("/api/assistant")
+@RequestMapping("/api/assistant")
+@CrossOrigin(origins = "*") // Permite que el Frontend se conecte sin bloqueos
 public class AssistantController {
 
-@Autowired private AssistantService assistantService;    
-@PostMapping("/build")
-public ResponseEntity<?> processRequirements(@RequestBody PCRequirementRequest request) {
-    // 1. Validar reglas de negocio
-    String msg = assistantService.validateRequirements(request);
-    if (!msg.equals("OK")) return ResponseEntity.badRequest().body(msg);
+    @Autowired
+    private AssistantService assistantService;
 
-    // 2. Generar la configuración completa
-    Map<String, Object> response = assistantService.buildConfiguration(request);
-    
-    // 3. Si no hay CPU, es que el presupuesto no llega
-    if (response == null) {
-        return ResponseEntity.status(404).body("No se encontraron componentes para este presupuesto.");
+    @PostMapping("/build")
+    public ResponseEntity<?> buildConfiguration(@RequestBody PCRequirementRequest request) {
+        try {
+            // Llamamos al servicio que ya tiene las validaciones de campos vacíos
+            Map<String, Object> configuration = assistantService.buildConfiguration(request);
+            
+            if (configuration == null || configuration.isEmpty()) {
+                return ResponseEntity.status(404).body("No se encontraron componentes que se ajusten al presupuesto.");
+            }
+            
+            return ResponseEntity.ok(configuration);
+            
+        } catch (IllegalArgumentException e) {
+            // Si falta el presupuesto o el uso, devolvemos un error 400 claro
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            // Error genérico para cualquier otro fallo inesperado
+            return ResponseEntity.status(500).body("Error interno al generar la configuración: " + e.getMessage());
+        }
     }
-
-    return ResponseEntity.ok(response);
-}
 }
