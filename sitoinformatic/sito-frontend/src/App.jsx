@@ -1,38 +1,24 @@
 import React from 'react';
+// Importamos lo justo y necesario para el enrutado
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Catalogo from './components/Catalogo';
 import Configurador from './components/Configurador';
 
-// Vistas temporales hasta que hagamos los archivos de Login y Catálogo
-const CatálogoPrincipal = () => (
-  <div style={{ padding: '20px' }}>
-    <h2>Catálogo de Componentes</h2>
-    <p>Aquí listaremos todas las piezas de la base de datos.</p>
-  </div>
-);
-
-const LoginRegistro = () => (
-  <div style={{ padding: '20px' }}>
-    <h2>Área de Usuario</h2>
-    <p>Pantalla de Login / Registro con JWT.</p>
-  </div>
-);
+// Nota para programador: Pantalla simple de login para testeo rápido de rutas
+const Login = () => <div style={{padding: '20px'}}><h2>Sección de Login</h2></div>;
 
 function App() {
   return (
     <Router>
-      {/* El Navbar se queda fijo arriba */}
+      {/* El Navbar debe vivir dentro del Router para que funcionen los <Link> */}
       <Navbar />
       
       <Routes>
-        {/* La página principal ahora es el Catálogo, como pediste */}
-        <Route path="/" element={<CatálogoPrincipal />} />
-        
-        {/* El configurador es solo una herramienta más de la lista */}
+        {/* Definición de las rutas principales del proyecto */}
+        <Route path="/" element={<Catalogo />} />
         <Route path="/configurador" element={<Configurador />} />
-        
-        {/* Sección de entrada y registro */}
-        <Route path="/login" element={<LoginRegistro />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );

@@ -1,26 +1,15 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// Aquí traemos el archivo que creaste en la carpeta components
-import Navbar from './components/Navbar'; 
+import { Link } from 'react-router-dom';
 
-// Páginas de prueba (luego las haremos en archivos separados)
-const Inicio = () => <div style={{padding: '20px'}}><h2>🏠 Bienvenida a SitoInformatic</h2><p>Tu tienda de confianza.</p></div>;
-const Configurador = () => <div style={{padding: '20px'}}><h2>⚙️ Asistente de Configuración</h2><p>Aquí es donde ocurrirá la magia del TFG.</p></div>;
-const Login = () => <div style={{padding: '20px'}}><h2>👤 Acceso de Usuarios</h2><p>Inicia sesión para guardar tu PC.</p></div>;
-
-function App() {
+function Navbar() {
   return (
-    <Router>
-      {/* Ponemos el Navbar fuera de Routes para que se vea siempre arriba */}
-      <Navbar />
-      
-      <Routes>
-        <Route path="/" element={<Inicio />} />
-        <Route path="/configurador" element={<Configurador />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </Router>
+    <nav style={{ padding: '15px', background: '#1a1a1a', color: 'white', display: 'flex', gap: '20px' }}>
+      <b style={{ fontSize: '1.2rem' }}>SitoInformatic</b>
+      <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>Catálogo</Link>
+      <Link to="/configurador" style={{ color: '#00d4ff', textDecoration: 'none', fontWeight: 'bold' }}>Configurador</Link>
+      <Link to="/login" style={{ color: 'white', textDecoration: 'none', marginLeft: 'auto' }}>Entrar</Link>
+    </nav>
   );
 }
 
-export default App;
+export default Navbar;
