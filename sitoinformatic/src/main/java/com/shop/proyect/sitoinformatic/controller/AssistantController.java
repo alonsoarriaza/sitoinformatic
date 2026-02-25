@@ -7,10 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/api/assistant")
-@CrossOrigin(origins = "*") // Permite que el Frontend se conecte sin bloqueos
+@RequestMapping("/api/assistant") // Permite que el Frontend se conecte sin bloqueos
 public class AssistantController {
 
     @Autowired

@@ -14,7 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 
 @RestController
-@RequestMapping("/components")
+@RequestMapping("api/components")
+@CrossOrigin(origins = "http://localhost:5173") // Permite el acceso desde el puerto de Vite
 public class ComponentController {
 
     private final ComponentRepository componentRepository;

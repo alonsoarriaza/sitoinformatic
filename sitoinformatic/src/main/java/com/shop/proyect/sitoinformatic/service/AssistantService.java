@@ -21,60 +21,83 @@ public class AssistantService {
         BigDecimal budget = request.getBudget();
         String use = request.getMainUse().toUpperCase();
         
-        Map<String, Double> percentages = getPercentages(use, request.isIncludePeripherals());
+        // Ajustamos presupuesto para hardware (75% si hay periféricos, 100% si no)
+        BigDecimal hardwareBudget = request.isIncludePeripherals() ? budget.multiply(new BigDecimal("0.75")) : budget;
         
-        // Selección de piezas Core con nombres de columna snake_case
-        config.put("CPU", findBest(budget.multiply(BigDecimal.valueOf(percentages.get("CPU"))), "CPU", null));
-        config.put("GPU", findBest(budget.multiply(BigDecimal.valueOf(percentages.get("GPU"))), "GPU", null));
-        config.put("RAM", findBest(budget.multiply(BigDecimal.valueOf(percentages.get("RAM"))), "RAM", null));
-        config.put("SSD", findBest(budget.multiply(BigDecimal.valueOf(percentages.get("SSD"))), "SSD", null));
+        Map<String, Double> percentages = getPercentages(use);
+        
+        // Sincronizado con las categorías de tu import.sql
+        config.put("Procesador", findBest(hardwareBudget.multiply(BigDecimal.valueOf(percentages.get("CPU"))), "CPU", null));
+        config.put("Placa Base", findBest(hardwareBudget.multiply(BigDecimal.valueOf(percentages.get("MOTHERBOARD"))), "PLACA_BASE", null));
+        config.put("Memoria RAM", findBest(hardwareBudget.multiply(BigDecimal.valueOf(percentages.get("RAM"))), "RAM", null));
+        config.put("Tarjeta Gráfica", findBest(hardwareBudget.multiply(BigDecimal.valueOf(percentages.get("GPU"))), "GPU", null));
+        config.put("Almacenamiento", findBest(hardwareBudget.multiply(BigDecimal.valueOf(percentages.get("SSD"))), "SSD", null));
+        config.put("Fuente Alimentación", findBest(hardwareBudget.multiply(BigDecimal.valueOf(percentages.get("PSU"))), "PSU", null));
+        config.put("Caja/Chasis", findBest(hardwareBudget.multiply(BigDecimal.valueOf(percentages.get("CASE"))), "CASE", null));
 
         if (request.isIncludePeripherals()) {
-            config.put("Monitor", findBest(budget.multiply(new BigDecimal("0.15")), "MONITOR", null));
-            config.put("Teclado", findBest(budget.multiply(new BigDecimal("0.05")), "TECLADO", null));
-            config.put("Raton", findBest(budget.multiply(new BigDecimal("0.05")), "RATON", null));
+            BigDecimal periphBudget = budget.multiply(new BigDecimal("0.25"));
+            config.put("Monitor", findBest(periphBudget.multiply(new BigDecimal("0.60")), "MONITOR", null));
+            config.put("Teclado", findBest(periphBudget.multiply(new BigDecimal("0.20")), "TECLADO", null));
+            config.put("Ratón", findBest(periphBudget.multiply(new BigDecimal("0.20")), "RATON", null));
         }
         return config;
     }
 
-   private Component findBest(BigDecimal maxPrice, String category, String tag) {
-    // 1. Buscamos todos los componentes con stock
-    List<Component> candidates = componentRepository.findByCategoryAndStockGreaterThan(category, 0);
-
-    // 2. Filtramos por compatibilidad (si aplica)
-    List<Component> compatibleCandidates = candidates.stream()
-        .filter(c -> tag == null || c.getCompatibilityTag().equals(tag) || c.getCompatibilityTag().equals("UNIVERSAL"))
-        .toList();
-
-    // 3. Intentamos encontrar el mejor que entre en el precio
-    return compatibleCandidates.stream()
-        .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
-        .max(Comparator.comparing(Component::getPrice))
-        // 4. SI NO HAY NADA: Devolvemos el más barato de la tienda para que no sea null
-        .orElseGet(() -> compatibleCandidates.stream()
-            .min(Comparator.comparing(Component::getPrice))
-            .orElse(null));
-}
-
-    private void validateInputs(PCRequirementRequest request) {
-        if (request.getBudget() == null || request.getBudget().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("El presupuesto debe ser un número positivo real.");
-        }
-        if (request.getMainUse() == null || request.getMainUse().isEmpty()) {
-            throw new IllegalArgumentException("Debes indicar el uso (Gaming, Oficina o Streaming).");
-        }
-    }
-
-    private Map<String, Double> getPercentages(String use, boolean hasPeripherals) {
+    private Map<String, Double> getPercentages(String use) {
         Map<String, Double> p = new HashMap<>();
-        double factor = hasPeripherals ? 0.70 : 1.0;
-        if (use.equals("STREAMING")) {
-            p.put("CPU", 0.30 * factor); p.put("GPU", 0.40 * factor); p.put("RAM", 0.15 * factor); p.put("SSD", 0.15 * factor);
-        } else if (use.equals("GAMING")) {
-            p.put("CPU", 0.20 * factor); p.put("GPU", 0.50 * factor); p.put("RAM", 0.15 * factor); p.put("SSD", 0.15 * factor);
-        } else { // OFICINA
-            p.put("CPU", 0.50 * factor); p.put("GPU", 0.10 * factor); p.put("RAM", 0.20 * factor); p.put("SSD", 0.20 * factor);
+        // Distribución del 100% del presupuesto de la torre
+        switch (use) {
+            case "STREAMING" -> {
+                p.put("CPU", 0.25); p.put("GPU", 0.35); p.put("RAM", 0.12);
+                p.put("SSD", 0.10); p.put("MOTHERBOARD", 0.08); p.put("PSU", 0.05); p.put("CASE", 0.05);
+            }
+            case "GAMING" -> {
+                p.put("CPU", 0.20); p.put("GPU", 0.40); p.put("RAM", 0.10);
+                p.put("SSD", 0.10); p.put("MOTHERBOARD", 0.10); p.put("PSU", 0.05); p.put("CASE", 0.05);
+            }
+            default -> { // OFICINA
+                p.put("CPU", 0.40); p.put("GPU", 0.05); p.put("RAM", 0.15);
+                p.put("SSD", 0.15); p.put("MOTHERBOARD", 0.15); p.put("PSU", 0.05); p.put("CASE", 0.05);
+            }
         }
         return p;
     }
+
+    private Component findBest(BigDecimal maxPrice, String category, String tag) {
+        List<Component> candidates = componentRepository.findByCategoryAndStockGreaterThan(category, 0);
+
+        List<Component> compatibleCandidates = candidates.stream()
+            .filter(c -> tag == null || c.getCompatibilityTag().equals(tag) || c.getCompatibilityTag().equals("UNIVERSAL"))
+            .toList();
+
+        return compatibleCandidates.stream()
+            .filter(c -> c.getPrice().compareTo(maxPrice) <= 0)
+            .max(Comparator.comparing(Component::getPrice))
+            .orElseGet(() -> compatibleCandidates.stream()
+                .min(Comparator.comparing(Component::getPrice))
+                .orElse(null));
+    }
+
+    private void validateInputs(PCRequirementRequest request) {
+    BigDecimal budget = request.getBudget();
+    String use = request.getMainUse().toUpperCase();
+
+    if (budget == null || budget.compareTo(BigDecimal.ZERO) <= 0) {
+        throw new IllegalArgumentException("El presupuesto debe ser un número positivo.");
+    }
+
+    // Validación de realismo para tu TFG
+    if (use.equals("GAMING") && budget.compareTo(new BigDecimal("450")) < 0) {
+        throw new IllegalArgumentException("Presupuesto insuficiente: Un PC Gaming funcional requiere al menos 450€.");
+    }
+    
+    if (use.equals("STREAMING") && budget.compareTo(new BigDecimal("600")) < 0) {
+        throw new IllegalArgumentException("Presupuesto insuficiente: Para Streaming/Edición se recomiendan al menos 600€.");
+    }
+
+    if (budget.compareTo(new BigDecimal("200")) < 0) {
+        throw new IllegalArgumentException("Presupuesto demasiado bajo: No es posible montar un PC completo por menos de 200€.");
+    }
+}
 }
