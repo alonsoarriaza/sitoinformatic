@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Catalogo from './components/Catalogo';
 import Configurador from './components/Configurador';
+import Registro from './components/Registro';
 
 // Nota para programador: Pantalla simple de login para testeo rápido de rutas
 const Login = () => <div style={{padding: '20px'}}><h2>Sección de Login</h2></div>;
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<Catalogo />} />
         <Route path="/configurador" element={<Configurador />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/registro" element={<Registro />} />
       </Routes>
     </Router>
   );

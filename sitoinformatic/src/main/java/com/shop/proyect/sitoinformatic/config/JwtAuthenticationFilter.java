@@ -1,7 +1,6 @@
 package com.shop.proyect.sitoinformatic.config;
 
 import java.io.IOException;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +32,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain)
         throws ServletException, IOException {
+
+        // 1. OBTENER LA RUTA DE LA PETICIÓN
+        final String path = request.getServletPath();
+
+        // 2. EXCEPCIÓN: Si la ruta es pública, ignoramos la validación del token
+        if (path.startsWith("/api/auth/") || path.startsWith("/api/assistant/") || path.startsWith("/api/components/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         final String authHeader = request.getHeader("Authorization"); 
         final String jwt; 

@@ -64,28 +64,34 @@ public class SecurityConfig {
         return source;
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http, 
-            JwtAuthenticationFilter jwtAuthFilter, 
-            AuthenticationProvider authenticationProvider) throws Exception {
-    
-        http
-            // Activamos la configuración de CORS definida arriba
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable()) 
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll() // Login abierto
-                .requestMatchers(HttpMethod.GET, "/components/**").permitAll() // Catálogo público
-                .requestMatchers("/api/assistant/**").permitAll() // Asistente público
-                .anyRequest().authenticated() 
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) 
-            )
-            .authenticationProvider(authenticationProvider) 
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);         
+@Bean
+public SecurityFilterChain securityFilterChain(
+        HttpSecurity http, 
+        JwtAuthenticationFilter jwtAuthFilter, 
+        AuthenticationProvider authenticationProvider) throws Exception {
 
-        return http.build();
-    }
+    http
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(csrf -> csrf.disable()) 
+        .authorizeHttpRequests(auth -> auth
+            // 1. Rutas de Autenticación (Login y Registro)
+            .requestMatchers("/api/auth/**").permitAll() 
+            .requestMatchers("/auth/**").permitAll()
+
+            // 2. Rutas del Asistente y Componentes (Aseguramos ambos prefijos)
+            .requestMatchers("/api/assistant/**").permitAll()
+            .requestMatchers("/api/components/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/components/**").permitAll()
+
+            // 3. Cualquier otra petición requiere TOKEN
+            .anyRequest().authenticated() 
+        )
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS) 
+        )
+        .authenticationProvider(authenticationProvider) 
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);         
+
+    return http.build();
+}
 }
