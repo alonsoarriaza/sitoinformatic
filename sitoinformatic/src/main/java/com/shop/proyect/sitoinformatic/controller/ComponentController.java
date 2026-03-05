@@ -1,68 +1,45 @@
 package com.shop.proyect.sitoinformatic.controller;
 
+import com.shop.proyect.sitoinformatic.dto.PCRequirementRequest;
 import com.shop.proyect.sitoinformatic.model.Component;
 import com.shop.proyect.sitoinformatic.repository.ComponentRepository;
-import com.shop.proyect.sitoinformatic.service.ComponentService;
-
-import jakarta.validation.Valid;
-
+import com.shop.proyect.sitoinformatic.service.AssistantService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("api/components")
-@CrossOrigin(origins = "http://localhost:5173") // Permite el acceso desde el puerto de Vite
+@RequestMapping("/api/components")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5175"})
 public class ComponentController {
 
-    private final ComponentRepository componentRepository;
-    private final ComponentService componentService;
+    private final AssistantService assistantService;
+    
+    @Autowired
+    private ComponentRepository componentRepository; // Inyectamos el repositorio para el catálogo
 
-    public ComponentController(ComponentRepository componentRepository, ComponentService componentService) {
-        this.componentRepository = componentRepository;
-        this.componentService = componentService;
+    public ComponentController(AssistantService assistantService) {
+        this.assistantService = assistantService;
     }
 
-    
+    //  ENDPOINT PARA EL CATÁLOGO 
     @GetMapping
-   public ResponseEntity<Page<Component>> getAll(
-    @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        return ResponseEntity.ok(componentService.getAllComponents(pageable));
-}
-
-    
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Component> create(@Valid @RequestBody Component component) {
-        Component saved = componentRepository.save(component);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<List<Component>> getAllComponents() {
+        // Retorna todos los componentes del import.sql
+        return ResponseEntity.ok(componentRepository.findAll());
     }
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void>delete(@PathVariable Long id){
 
-        componentRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }  
-@PutMapping("/{id}")
-// @PreAuthorize("hasRole('ADMIN')")
-public ResponseEntity<Component> update(@PathVariable Long id,@Valid @RequestBody Component componentDetails) {
-    Component update = componentService.updateComponent(id, componentDetails);
-    return ResponseEntity.ok(update);
-}
-@GetMapping("/category/{category}")
-public ResponseEntity<Page<Component>> getByCategory(
-    @PathVariable String category,
-    @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        return ResponseEntity.ok(componentService.getComponentsByCategory(category, pageable));
-}
-@GetMapping("/search")
-public ResponseEntity<Page<Component>> searchByName(
-    @RequestParam String name,
-    @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        return ResponseEntity.ok(componentService.searchByName(name, pageable));
-}
+    // ENDPOINT PARA EL CONFIGURADOR IA 
+    @PostMapping("/configurador")
+    public ResponseEntity<Map<String, Object>> generatePC(@RequestBody PCRequirementRequest request) {
+        try {
+            Map<String, Object> config = assistantService.buildConfiguration(request);
+            return ResponseEntity.ok(config);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

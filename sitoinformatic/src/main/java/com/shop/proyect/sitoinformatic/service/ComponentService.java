@@ -1,63 +1,42 @@
 package com.shop.proyect.sitoinformatic.service;
 
-
-import org.springframework.stereotype.Service;
 import com.shop.proyect.sitoinformatic.model.Component;
 import com.shop.proyect.sitoinformatic.repository.ComponentRepository;
-import jakarta.validation.constraints.NotNull;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ComponentService {
 
     private final ComponentRepository componentRepository;
 
-    
     public ComponentService(ComponentRepository componentRepository) {
         this.componentRepository = componentRepository;
     }
 
-    @SuppressWarnings("unused")
-    public Component saveComponent(@NotNull Component component) {
-    Component saved = componentRepository.save(component);
-    if (saved == null) {
-        throw new RuntimeException("Error al guardar el componente");
-    }
-    return saved;
-}
-    public Page<Component> getAllComponents(Pageable pageable) {
-        return componentRepository.findAll(pageable);
-    }
-    public Component getComponentById(Long id) {
-        return componentRepository.findById(id)
-                .orElse(null);
-    }
-    public void deleteComponent(Long id) {
-        componentRepository.deleteById(id);
+    public List<Component> getAllComponents() {
+        return componentRepository.findAll();
     }
 
-    public Component updateComponent(Long id, Component componentDetails) {
-    return componentRepository.findById(id)
-        .map(componentExist -> {
-          
-            componentExist.setProductName(componentDetails.getProductName());
-            componentExist.setPrice(componentDetails.getPrice());
-            componentExist.setCategory(componentDetails.getCategory());
-            componentExist.setBrand(componentDetails.getBrand());
-            componentExist.setStock(componentDetails.getStock());
+    public Optional<Component> getComponentById(Long id) {
+        return componentRepository.findById(id);
+    }
 
-            return componentRepository.save(componentExist); 
-        }) 
-        .orElseThrow(() -> new RuntimeException("Componente no encontrado con id: " + id));
-}
-// Método para filtrar por categoría
-public Page<Component> getComponentsByCategory(String category, Pageable pageable) {
-    return componentRepository.findByCategoryIgnoreCase(category, pageable);
-}
+    public List<Component> getByBrand(String brand) {
+        return componentRepository.findAll().stream()
+                .filter(c -> c.getBrand() != null && c.getBrand().equalsIgnoreCase(brand))
+                .collect(Collectors.toList());
+    }
 
-// Método para el buscador por nombre
-public Page<Component> searchByName(String name, Pageable pageable) {
-    return componentRepository.findByProductNameContainingIgnoreCase(name, pageable);
-}
+    public void updateStock(Long id, Integer newStock) {
+        componentRepository.findById(id).ifPresent(c -> {
+            c.setStock(newStock);
+            componentRepository.save(c);
+        });
+    }
+    public void imprimirNombre(Component c) {
+        System.out.println(c.getProductName()); 
+    }
 }

@@ -1,121 +1,134 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Navbar from "./Navbar";
 
-function Registro() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    birthdate: '',
-    rol: 'ROLE_USER' // Coincide con tu lógica de GrantedAuthority
-  });
-  const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
+const Registro = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({ username: "", email: "", password: "" });
+  const [mensaje, setMensaje] = useState({ texto: "", tipo: "" });
+  const [enviando, setEnviando] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleFinalizarRegistro = async (e) => {
     e.preventDefault();
-    setMensaje({ texto: '', tipo: '' });
+    setEnviando(true);
+    setMensaje({ texto: "Procesando tu solicitud...", tipo: "info" });
 
     try {
-      // Llamada a tu AuthController ya creado
-      await axios.post('http://localhost:8080/api/auth/register', formData);
+      const res = await axios.post("http://localhost:8080/api/auth/register", formData);
       
-      setMensaje({ texto: '✨ ¡Cuenta creada! Redirigiendo al login...', tipo: 'exito' });
-      
-      // Esperamos un poco para que el usuario vea el mensaje y redirigimos
-      setTimeout(() => navigate('/login'), 2000);
-      
-    } catch (error) {
-      const errorMsg = error.response?.data?.message || error.response?.data || "Error al registrar usuario";
-      setMensaje({ texto: errorMsg, tipo: 'error' });
+      // Si el servidor responde con 200 o 201, es un éxito total
+      if (res.status === 200 || res.status === 201) {
+        setMensaje({ texto: "¡Cuenta creada con éxito! Bienvenido a SitoInformatic.", tipo: "success" });
+        
+        // Esperamos un poco para que el usuario lea el mensaje de éxito antes de redirigir
+        setTimeout(() => navigate("/login"), 2500);
+      }
+    } catch (err) {
+      // Solo mostramos error si realmente ha fallado (ej: email duplicado)
+      const errorMsg = err.response?.data?.message || "Error al crear la cuenta. Inténtalo de nuevo.";
+      setMensaje({ texto: errorMsg, tipo: "error" });
+      setEnviando(false);
     }
   };
 
   return (
-    <div style={{ padding: '60px 20px', minHeight: '80vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <div style={{ 
-        width: '100%', 
-        maxWidth: '450px', 
-        background: '#ffffff', 
-        padding: '40px', 
-        borderRadius: '15px', 
-        boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
-        border: '1px solid #e2e8f0'
-      }}>
-        <h2 style={{ textAlign: 'center', color: '#000000', marginBottom: '30px', fontSize: '2rem' }}>SitoInformatic</h2>
-        <p style={{ textAlign: 'center', color: '#64748b', marginBottom: '30px' }}>Crea tu cuenta para guardar tus configuraciones</p>
+    <div style={styles.container}>
+      <Navbar />
+      <div style={styles.formWrapper}>
+        <div style={styles.card}>
+          <div style={styles.iconHeader}>✨</div>
+          <h1 style={styles.title}>Crea tu cuenta</h1>
+          <p style={styles.subtitle}>Únete a la comunidad de SitoInformatic para gestionar tus configuraciones IA.</p>
 
-        {mensaje.texto && (
-          <div style={{ 
-            padding: '12px', 
-            borderRadius: '8px', 
-            marginBottom: '20px',
-            textAlign: 'center',
-            fontSize: '0.9rem',
-            backgroundColor: mensaje.tipo === 'error' ? '#fef2f2' : '#f0fdf4',
-            color: mensaje.tipo === 'error' ? '#dc2626' : '#16a34a',
-            border: `1px solid ${mensaje.tipo === 'error' ? '#fecaca' : '#bbf7d0'}`
-          }}>
-            {mensaje.texto}
-          </div>
-        )}
+          {mensaje.texto && (
+            <div style={{
+              ...styles.msg, 
+              backgroundColor: mensaje.tipo === 'success' ? 'rgba(16, 185, 129, 0.2)' : mensaje.tipo === 'error' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+              color: mensaje.tipo === 'success' ? '#10b981' : mensaje.tipo === 'error' ? '#f87171' : '#60a5fa',
+              border: `1px solid ${mensaje.tipo === 'success' ? '#10b981' : mensaje.tipo === 'error' ? '#ef4444' : '#3b82f6'}`
+            }}>
+              {mensaje.texto}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit}>
-          <div style={groupStyle}>
-            <label style={labelStyle}>Nombre Completo</label>
-            <input type="text" name="name" required onChange={handleChange} style={inputStyle} placeholder="Tu nombre" />
-          </div>
-
-          <div style={groupStyle}>
-            <label style={labelStyle}>Email</label>
-            <input type="email" name="email" required onChange={handleChange} style={inputStyle} placeholder="ejemplo@correo.com" />
-          </div>
-
-          <div style={groupStyle}>
-            <label style={labelStyle}>Contraseña</label>
-            <input type="password" name="password" required onChange={handleChange} style={inputStyle} placeholder="••••••••" />
-          </div>
-
-          <div style={groupStyle}>
-            <label style={labelStyle}>Fecha de Nacimiento</label>
-            <input type="date" name="birthdate" required onChange={handleChange} style={inputStyle} />
-          </div>
-
-          <button type="submit" style={{ 
-            width: '100%', 
-            padding: '14px', 
-            backgroundColor: '#000000', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '8px', 
-            fontWeight: 'bold', 
-            fontSize: '1rem',
-            cursor: 'pointer',
-            transition: 'opacity 0.2s'
-          }}>
-            Registrarse ahora
-          </button>
-        </form>
+          <form style={styles.form} onSubmit={handleFinalizarRegistro}>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Nombre de Usuario</label>
+              <input 
+                type="text" 
+                placeholder="Tu nombre o alias" 
+                style={styles.input} 
+                required 
+                onChange={(e) => setFormData({...formData, username: e.target.value})} 
+              />
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Correo Electrónico</label>
+              <input 
+                type="email" 
+                placeholder="ejemplo@sito.com" 
+                style={styles.input} 
+                required 
+                onChange={(e) => setFormData({...formData, email: e.target.value})} 
+              />
+            </div>
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Contraseña</label>
+              <input 
+                type="password" 
+                placeholder="Mínimo 8 caracteres" 
+                style={styles.input} 
+                required 
+                onChange={(e) => setFormData({...formData, password: e.target.value})} 
+              />
+            </div>
+            
+            <button 
+                type="submit" 
+                disabled={enviando}
+                style={{
+                    ...styles.submitBtn,
+                    background: enviando ? '#1e293b' : '#3b82f6',
+                    cursor: enviando ? 'not-allowed' : 'pointer'
+                }}
+            >
+              {enviando ? "Creando cuenta..." : "Finalizar Registro"}
+            </button>
+          </form>
+          
+          <p style={styles.footerText}>
+            ¿Ya tienes cuenta? <span style={styles.link} onClick={() => navigate("/login")}>Inicia sesión aquí</span>
+          </p>
+        </div>
       </div>
     </div>
   );
-}
+};
 
-// Estilos rápidos para mantener el archivo limpio
-const groupStyle = { marginBottom: '20px' };
-const labelStyle = { display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: '600', color: '#334155' };
-const inputStyle = { 
-  width: '100%', 
-  padding: '12px', 
-  borderRadius: '8px', 
-  border: '1px solid #cbd5e1', 
-  fontSize: '1rem', 
-  boxSizing: 'border-box' 
+const styles = {
+  container: { backgroundColor: "#020617", minHeight: "100vh", color: "#f8fafc", fontFamily: "'Inter', sans-serif" },
+  formWrapper: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 20px" },
+  card: { 
+    backgroundColor: "#0f172a", 
+    padding: "50px 40px", 
+    borderRadius: "32px", 
+    width: "100%", 
+    maxWidth: "460px", 
+    border: "1px solid #1e293b",
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)"
+  },
+  iconHeader: { fontSize: "3rem", marginBottom: "20px", textAlign: "center" },
+  title: { fontSize: "2.2rem", fontWeight: "800", marginBottom: "10px", textAlign: "center", letterSpacing: "-1px" },
+  subtitle: { color: "#94a3b8", textAlign: "center", marginBottom: "35px", fontSize: "1rem", lineHeight: "1.5" },
+  msg: { padding: '16px', borderRadius: '12px', marginBottom: '25px', textAlign: 'center', fontSize: '0.95rem', fontWeight: '600' },
+  form: { display: "flex", flexDirection: "column", gap: "20px" },
+  inputGroup: { display: "flex", flexDirection: "column", gap: "10px" },
+  label: { fontSize: "0.85rem", color: "#cbd5e1", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px" },
+  input: { padding: "16px", borderRadius: "14px", backgroundColor: "#020617", border: "1px solid #334155", color: "#ffffff", outline: "none", fontSize: "1rem", transition: "0.3s" },
+  submitBtn: { padding: "18px", color: "white", border: "none", borderRadius: "14px", fontWeight: "800", fontSize: "1.1rem", marginTop: "10px", transition: "0.3s", boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.3)" },
+  footerText: { textAlign: "center", marginTop: "30px", color: "#94a3b8", fontSize: "0.95rem" },
+  link: { color: "#3b82f6", cursor: "pointer", fontWeight: "700", textDecoration: "underline" }
 };
 
 export default Registro;
