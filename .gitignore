@@ -1,31 +1,34 @@
-# Maven build artifacts
+# Maven build folder
 target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.restore
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
+*.jar
+*.war
+*.zip
+*.tar.gz
 
-# Node / JS dependencies and builds
-node_modules/
+# IDE and Editor Files
+.idea/
+*.iml
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.settings/
+.project
+.classpath
+.factorypath
+
+# Node / Frontend
 sito-frontend/node_modules/
 sito-frontend/dist/
-sito-frontend/dist-ssr/
-*.local
+sito-frontend/.env.local
+sito-frontend/.env.development.local
+sito-frontend/.env.test.local
+sito-frontend/.env.production.local
+sito-frontend/npm-debug.log*
+sito-frontend/yarn-debug.log*
+sito-frontend/yarn-error.log*
+sito-frontend/pnpm-debug.log*
 
-# IDEs and editors
-.idea/
-.vscode/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# OS files
-.DS_Store
+# System Files
 Thumbs.db
+Desktop.ini
+.DS_Store

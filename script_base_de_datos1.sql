@@ -279,7 +279,7 @@ INSERT INTO public.users VALUES (NULL, 17, 'alonso123@gmail.com', NULL, '$2a$10$
 -- Name: carrito_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
--- SELECT pg_catalog.setval('public.carrito_id_seq', 192, true);
+SELECT pg_catalog.setval('public.carrito_id_seq', 192, true);
 
 
 --
@@ -288,7 +288,7 @@ INSERT INTO public.users VALUES (NULL, 17, 'alonso123@gmail.com', NULL, '$2a$10$
 -- Name: components_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
--- SELECT pg_catalog.setval('public.components_id_seq', 81, true);
+SELECT pg_catalog.setval('public.components_id_seq', 81, true);
 
 
 --
@@ -297,7 +297,7 @@ INSERT INTO public.users VALUES (NULL, 17, 'alonso123@gmail.com', NULL, '$2a$10$
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
--- SELECT pg_catalog.setval('public.users_id_seq', 17, true);
+SELECT pg_catalog.setval('public.users_id_seq', 17, true);
 
 
 --

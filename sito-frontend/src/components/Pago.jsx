@@ -202,4 +202,3 @@ function Pago() {
 }
 
 export default Pago;
-
